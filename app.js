@@ -8,20 +8,20 @@ const inquirer = require("inquirer");
 // Constructors
 const Manager = require("./lib/Manager");
 const Engineer = require("./lib/Engineer");
-const Intern = require("./lib/Intern"); 
+const Intern = require("./lib/Intern");
 
 const OUTPUT_DIR = path.resolve(__dirname, "output");
 const outputPath = path.join(OUTPUT_DIR, "team.html");
-const render = require("./lib/htmlRenderer"); 
+const render = require("./lib/htmlRenderer");
 const { listenerCount } = require("process");
 
-const employees = []; 
+const employees = [];
 const {
     managerPrompt,
     addEmployee,
     internPrompt,
     engineerPrompt,
-  } = require("./lib/prompts");
+} = require("./lib/prompts");
 
 
 // Write code to use inquirer to gather information about the development team members,
@@ -30,51 +30,55 @@ const {
 managerPrompt().then(function (manager) {
     // builds manager, pushes to array
     employees.push(
-      new Manager(manager.name, manager.id, manager.email, manager.officeNumber)
+        new Manager(manager.name, manager.id, manager.email, manager.officeNumber)
     );
     main();
-  });
+});
 
 
-  function main () { 
-      addEmployee().then(function ({ engineerOrIntern }) {
-          if(engineerOrIntern === "Engineer") {
-              // prompt for engineer details 
-              engineerPrompt().then (function (engineer) { 
-                  employees.push( 
-                      new Engineer( 
-                          engineer.name,
-                          engineer.id, 
-                          engineer.email,
-                          engineer.github
-                      )
-                  ); 
-                  main();
-              });
-          } else if(engineerOrIntern === "Intern") {
-              // prompt for intern details 
-              internPrompt().then (function (intern){ 
-                  employees.push( 
-                      new Intern( 
-                          intern.name, 
-                          intern.id, 
-                          intern.email, 
-                          intern.school 
-                      )
-                  ); 
-                  main();
-              });
-          } else {
-              // write to file 
-              fs.writeFile(outputPath, render(employees), (err) => { 
-                  if (err) throw err; 
-                  console.log("File has successfully been written");
-              });
-  
-          }
-      });
-  
-  }
+function main() {
+    addEmployee().then(function ({ engineerOrIntern }) { 
+        if (engineerOrIntern === "Engineer") {  
+            // prompt for engineer details 
+            engineerPrompt().then(function (engineer) { 
+                // build engineer and push
+                employees.push(
+                    new Engineer(
+                        engineer.name,
+                        engineer.id,
+                        engineer.email,
+                        engineer.github
+                    )
+                ); 
+                // prompt to add another employee
+                main();
+            });
+        } else if (engineerOrIntern === "Intern") {
+            // prompt for intern details 
+            internPrompt().then(function (intern) { 
+                // build intern and push
+                employees.push(
+                    new Intern(
+                        intern.name,
+                        intern.id,
+                        intern.email,
+                        intern.school
+                    )
+                ); 
+                // prompt to add another employee
+                main();
+            });
+        } else {
+            // write to file 
+            fs.writeFile(outputPath, render(employees), (err) => {
+                if (err) throw err;
+                console.log("File has successfully been written");
+            });
+
+        }
+    });
+
+}
 
 // After the user has input all employees desired, call the `render` function (required
 // above) and pass in an array containing all employee objects; the `render` function will
