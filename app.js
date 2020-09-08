@@ -68,9 +68,12 @@ function main() {
                 // prompt to add another employee
                 main();
             });
-        } else {
+        } else { 
+            if(!fs.existsSync (OUTPUT_DIR)){ 
+                fs.mkdirSync(OUTPUT_DIR)
+            }
             // write to file 
-            fs.writeFile(outputPath, render(employees), (err) => {
+            fs.writeFileSync(outputPath, render(employees), "utf-8", (err) => {
                 if (err) throw err;
                 console.log("File has successfully been written");
             });
